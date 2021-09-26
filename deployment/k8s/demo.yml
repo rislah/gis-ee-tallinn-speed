@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gis-deployment
+  labels:
+    app: gis
+spec:
+  selector:
+    matchLabels:
+      app: gis
+  template:
+    metadata:
+      labels:
+        app: gis
+      annotations:
+        vault.security.banzaicloud.io/vault-addr: "https://vault:8200"
+        vault.security.banzaicloud.io/vault-tls-secret: vault-tls
+    spec:
+      containers:
+        - name: gis
+          image: risla8/gis:latest
+          imagePullPolicy: Always
+          env:
+            - name: POSTGRES_PASSWORD
+              value: vault:secret/data/gis#POSTGRES_PASSWORD
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gis-svc
+spec:
+  type: NodePort
+  selector:
+    app: gis
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30007

@@ -1,0 +1,8 @@
+services:
+  postgres:
+    image: postgis/postgis
+    environment:
+      - POSTGRES_USER=risla
+      - POSTGRES_PASSWORD=parool
+    ports:
+      - 5432:5432

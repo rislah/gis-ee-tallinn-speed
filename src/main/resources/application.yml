@@ -1,0 +1,32 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
+    database: postgresql
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 30
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+  jackson:
+    deserialization:
+      ADJUST_DATES_TO_CONTEXT_TIME_ZONE: false
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}/${POSTGRES_DB:risla}?reWriteBatchedInserts=true
+    username: ${POSTGRES_USERNAME:risla}
+    password: ${POSTGRES_PASSWORD:parool}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: false
+
+server:
+  ssl:
+    key-store: classpath:springboot.p12
+    key-store-password: changeit
+    key-alias: springboot
+    key-store-type: pkcs12
