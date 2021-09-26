@@ -24,6 +24,8 @@ spec:
           env:
             - name: POSTGRES_PASSWORD
               value: vault:secret/data/gis#POSTGRES_PASSWORD
+            - name: POSTGRES_USERNAME
+              value: vault:secret/data/gis#POSTGRES_USERNAME
           ports:
             - containerPort: 8080
 ---
