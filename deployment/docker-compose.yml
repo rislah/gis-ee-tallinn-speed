@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgis/postgis
+    shm_size: 1g
     environment:
       - POSTGRES_USER=risla
       - POSTGRES_PASSWORD=parool

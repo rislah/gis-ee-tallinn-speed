@@ -39,7 +39,7 @@ public class GeoDataScheduler {
                 geoDataService.saveAllList(geoData);
             }
         } catch (Exception ex) {
-            log.error(ex.getMessage());
+            log.error(ex.toString());
         }
     }
 }

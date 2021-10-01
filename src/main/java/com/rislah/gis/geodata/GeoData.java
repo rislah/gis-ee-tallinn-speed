@@ -12,14 +12,17 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "gdata")
+@Table(name = "gdata", indexes = {
+        @Index(name = "idx_geodata_timestamp", columnList = "timestamp"),
+        @Index(name = "idx_geodata_vehicle_id_id", columnList = "vehicle_id, id")
+})
 @Getter
 @Setter
 @NoArgsConstructor
 public class GeoData {
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     @Id
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gdata_generator")
     @SequenceGenerator(name = "gdata_generator", sequenceName = "gdata_id_seq", allocationSize = 1)
@@ -31,22 +34,12 @@ public class GeoData {
     @Column(name = "timestamp", nullable = false, columnDefinition = "timestamptz")
     private ZonedDateTime timestamp;
 
-    @Column(name = "vehicle_id", nullable = false, columnDefinition = "INT")
+    @Column(name = "vehicle_id", nullable = false, columnDefinition = "int")
     private int vehicleId;
 
-    @Column(name = "vehicle_type", nullable = false, columnDefinition = "INT")
-    private int vehicleType;
+    @Column(name = "vehicle_type", nullable = false, columnDefinition = "int")
+    private int vehicleTypeId;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        GeoData geoData = (GeoData) o;
-        return Objects.equals(id, geoData.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 0;
-    }
+    @Column(name = "route", nullable = false, columnDefinition = "text")
+    private String route;
 }

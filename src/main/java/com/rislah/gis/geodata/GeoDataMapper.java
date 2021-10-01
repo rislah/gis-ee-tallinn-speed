@@ -16,7 +16,8 @@ import java.util.Map;
 public interface GeoDataMapper {
     @Mapping(source = "feature", target = "point", resultType = Point.class, qualifiedByName = "featureToPoint")
     @Mapping(source = "feature", target = "vehicleId", qualifiedByName = "featureToVehicleId")
-    @Mapping(source = "feature", target = "vehicleType", qualifiedByName = "featureToVehicleType")
+    @Mapping(source = "feature", target = "vehicleTypeId", qualifiedByName = "featureToVehicleTypeId")
+    @Mapping(source = "feature", target = "route", qualifiedByName = "featureToRoute")
     @Mapping(source = "timestamp", target = "timestamp")
     GeoDataDTO featureToGeoDataDTO(Feature feature, ZonedDateTime timestamp);
 
@@ -25,6 +26,17 @@ public interface GeoDataMapper {
         org.geojson.Point point = (org.geojson.Point) feature.getGeometry();
         GeometryFactory geometryFactory = new GeometryFactory();
         return geometryFactory.createPoint(new Coordinate(point.getCoordinates().getLongitude(), point.getCoordinates().getLatitude()));
+    }
+
+    @Named("featureToRoute")
+    default String featureToRoute(Feature feature) {
+        Map<String, Object> properties = feature.getProperties();
+        for (Map.Entry<String, Object> prop : properties.entrySet()) {
+            if (prop.getKey().equals("line")) {
+                return String.valueOf(prop.getValue());
+            }
+        }
+        return "";
     }
 
     @Named("featureToVehicleId")
@@ -38,8 +50,8 @@ public interface GeoDataMapper {
         return 0;
     }
 
-    @Named("featureToVehicleType")
-    default int featureToVehicleType(Feature feature) {
+    @Named("featureToVehicleTypeId")
+    default int featureToVehicleTypeId(Feature feature) {
         Map<String, Object> properties = feature.getProperties();
         for (Map.Entry<String, Object> prop : properties.entrySet()) {
             if (prop.getKey().equals("type")) {
@@ -49,7 +61,7 @@ public interface GeoDataMapper {
         return 0;
     }
 
-//    @Mapping(target = "timestamp", expression =
+    //    @Mapping(target = "timestamp", expression =
 //            "java(ZonedDateTime.now(ZoneId.of(\"Europe/Tallinn\")))")
     GeoData geoDataDTOToGeoData(GeoDataDTO dto);
 }

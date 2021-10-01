@@ -10,7 +10,8 @@ import java.time.ZonedDateTime;
 @Data
 public class GeoDataDTO {
     private Point point;
-    private int vehicleType;
+    private int vehicleTypeId;
     private int vehicleId;
+    private String route;
     private ZonedDateTime timestamp;
 }
