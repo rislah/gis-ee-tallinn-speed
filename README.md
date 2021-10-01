@@ -1,5 +1,5 @@
 # gis-ee-tallinn-speed
-> Pulls live data from https://gis.ee/tallinn/ and calculates the distance travelled and speed in relation to the previous GPS coordinates using PostGis.
+> Pulls live data from https://gis.ee/tallinn/ and calculates the distance travelled and speed using PostGis.
 
 Since there's no information how fast it gets live GPS coordinates (besides the geojson endpoint refreshing with new data every 5 seconds), then the speed could sometimes be absurdly high.
 
