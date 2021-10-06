@@ -1,4 +1,13 @@
 services:
+  app:
+    image: risla8/gis:latest
+    environment:
+      - POSTGRES_HOST=postgres
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+
   postgres:
     image: postgis/postgis
     shm_size: 1g
@@ -7,3 +16,27 @@ services:
       - POSTGRES_PASSWORD=parool
     ports:
       - 5432:5432
+
+  prometheus:
+    image: prom/prometheus:v2.1.0
+    volumes:
+      - ./prometheus/:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/config.yml'
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana
+    user: "472"
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=parool
+      - GF_USERS_ALLOW_SIGN_UP=false
+    #    volumes:
+    #      - ./grafana:
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000

@@ -24,9 +24,17 @@ spring:
   flyway:
     enabled: false
 
-server:
-  ssl:
-    key-store: classpath:springboot.p12
-    key-store-password: changeit
-    key-alias: springboot
-    key-store-type: pkcs12
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+
+
+#
+#server:
+#  ssl:
+#    key-store: classpath:springboot.p12
+#    key-store-password: changeit
+#    key-alias: springboot
+#    key-store-type: pkcs12

@@ -4,12 +4,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.Hibernate;
 import org.locationtech.jts.geom.Point;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "gdata", indexes = {

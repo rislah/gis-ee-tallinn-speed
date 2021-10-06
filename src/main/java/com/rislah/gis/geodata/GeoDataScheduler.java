@@ -1,5 +1,8 @@
 package com.rislah.gis.geodata;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,26 +22,42 @@ public class GeoDataScheduler {
     private final GeoDataHTTP geoDataHTTP;
     private final GeoDataHTTPResponseMapper geoDataHTTPResponseMapper;
     private final GeoDataService geoDataService;
+    private final Timer timer;
 
     @Autowired
-    public GeoDataScheduler(GeoDataMapper geoDataMapper, GeoDataHTTP geoDataHTTP, GeoDataHTTPResponseMapper geoDataHTTPResponseMapper, GeoDataService geoDataService) {
+    public GeoDataScheduler(GeoDataMapper geoDataMapper, GeoDataHTTP geoDataHTTP, GeoDataHTTPResponseMapper
+            geoDataHTTPResponseMapper, GeoDataService geoDataService, MeterRegistry meterRegistry) {
         this.geoDataMapper = geoDataMapper;
         this.geoDataHTTP = geoDataHTTP;
         this.geoDataHTTPResponseMapper = geoDataHTTPResponseMapper;
         this.geoDataService = geoDataService;
+        timer = meterRegistry.timer("geodata_scheduler_requests", "method", "GET");
     }
 
     @Scheduled(fixedRate = FIXED_RATE_SECONDS, timeUnit = TimeUnit.SECONDS)
     public void fetchAndSaveData() {
+        HttpResponse<String> res = timer.record(() -> {
+            try {
+                HttpRequest request = geoDataHTTP.prepareRequest();
+                return geoDataHTTP.sendRequest(request);
+            } catch (Exception ex) {
+                log.error(ex.toString());
+            }
+            return null;
+        });
+
+        if (res == null) {
+            return;
+        }
+
         try {
-            HttpRequest request = geoDataHTTP.prepareRequest();
-            HttpResponse<String> res = geoDataHTTP.sendRequest(request);
             List<GeoDataDTO> geoDataDTOS = geoDataHTTPResponseMapper.mapResponseToDto(res);
             List<GeoData> geoData = geoDataDTOS.stream().map(geoDataMapper::geoDataDTOToGeoData).toList();
             if (geoData.size() > 0) {
                 geoDataService.saveAllList(geoData);
             }
-        } catch (Exception ex) {
+            log.info("Saved {} entries", geoData.size());
+        } catch (JsonProcessingException ex) {
             log.error(ex.toString());
         }
     }

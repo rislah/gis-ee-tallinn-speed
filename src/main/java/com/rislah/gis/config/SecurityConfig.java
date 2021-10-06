@@ -16,13 +16,14 @@ import java.util.List;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .requiresChannel(channel ->
-                        channel.anyRequest().requiresSecure())
-                .authorizeRequests(authorize ->
-                        authorize.anyRequest().permitAll())
-                .cors()
-                .and();
+        http.httpBasic().disable();
+//        http
+//                .requiresChannel(channel ->
+//                        channel.anyRequest().requiresSecure())
+//                .authorizeRequests(authorize ->
+//                        authorize.anyRequest().permitAll())
+//                .cors()
+//                .and();
     }
 
     @Bean
